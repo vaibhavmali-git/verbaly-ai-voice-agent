@@ -141,3 +141,17 @@ export async function signOut (){
 
     redirect("/")
 }
+
+export async function getCurrentUser() {
+    const {accessToken} = await readAuthCookies()
+    if(!accessToken) return {user:null}
+    const insforge = createInsforgeServerClient(accessToken)
+    const {data,error}=await insforge.auth.getCurrentUser()
+
+    if(error || !data.user){
+        await clearCookies()
+        return {user:null}
+    }
+
+    return {user: data.user}
+}
